@@ -21,15 +21,15 @@ lambdaServer.on('connection', (proxySocket, request) => {
   log(`Lambda connection incoming with function ID: ${serialize(request.url)}`);
   const foundCacheRecord = socketCache.find(cacheRecord => cacheRecord.key === request.url);
   if (foundCacheRecord) {
-    log('Found conflicting key in cache. Terminating connection.');
-    proxySocket.close();
-  } else {
-    log(`Registering proxy in cache under key: ${request.url}`);
-    socketCache.push({
-      key: request.url,
-      proxySocket,
-    });
+    log('Found conflicting key in cache. Terminating old connection.');
+    foundCacheRecord.proxySocket.close();
   }
+
+  log(`Registering proxy in cache under key: ${request.url}`);
+  socketCache.push({
+    key: request.url,
+    proxySocket,
+  });
 
   proxySocket.on('error', (error) => {
     log(`Proxy socket error: ${serialize(error)}`);
@@ -53,11 +53,13 @@ userServer.on('connection', (userSocket, request) => {
   if (foundCacheRecord) {
     // kick anything after the first debugger or if the proxy socket isn't open
     log('Found associated proxy in cache.');
-    if ((foundCacheRecord.userSocket) ||
-      foundCacheRecord.proxySocket.readyState !== WebSocket.OPEN) {
-      log('Associated proxy already has a user connection. Terminating connection.');
+    if (foundCacheRecord.proxySocket.readyState !== WebSocket.OPEN) {
+      log('Associated proxy is not is OPEN state');
       userSocket.close();
       return;
+    } else if (foundCacheRecord.userSocket) {
+      log('Associated proxy already has a user connection. Terminating old connection.');
+      foundCacheRecord.userSocket.close();
     }
     proxySocket = foundCacheRecord.proxySocket; // eslint-disable-line
     foundCacheRecord.userSocket = userSocket;
@@ -73,7 +75,10 @@ userServer.on('connection', (userSocket, request) => {
   // pass along V8 inspector messages
   userSocket.on('message', (message) => {
     if (proxySocket.readyState === WebSocket.OPEN) {
-      proxySocket.send(JSON.stringify({ type: types.V8_INSPECTOR_MESSAGE, payload: message }));
+      proxySocket.send(JSON.stringify({
+        type: types.V8_INSPECTOR_MESSAGE,
+        payload: message
+      }));
     }
   });
 
