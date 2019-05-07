@@ -18,7 +18,7 @@ function currentTimeInMilliseconds() {
 
 function runAsProxy() {
   if (!process.env.DEBUGGER_ACTIVE || process.env.DEBUGGER_ACTIVE === 'false') return;
-  console.log('[AWS Lambda Debugger] Debugger Status: ACTIVE');
+  console.log('#NL Debugger Status: ACTIVE');
   let childResolver;
   let debuggerUrl;
   const childPromise = new Promise((resolve) => { childResolver = resolve; });
@@ -37,7 +37,7 @@ function runAsProxy() {
       const message = JSON.parse(messageString);
       switch (message.type) {
         case types.CHILD_READY: {
-          console.log('[AWS Lambda Debugger] Child ready.');
+          console.log('#NL Child ready.');
           debuggerUrl = message.debuggerUrl; // eslint-disable-line
           childResolver();
           break;
@@ -100,7 +100,7 @@ function runAsProxy() {
         switch (message.type) {
           // handle notification from broker that user has connected
           case types.USER_CONNECTED: {
-            console.log('[AWS Lambda Debugger] User connected via broker. Invoking child.');
+            console.log('#NL User connected via broker. Invoking child.');
 
             // open socket to child's debugger endpoint
             childSocket = new WebSocket(debuggerUrl);
@@ -192,7 +192,7 @@ function runAsChild() {
         message.context.fail = err => message.context.done(err, null);
 
         // get ready for the user
-        console.log(`[AWS Lambda Debugger] Current AWS request ID: ${message.context.awsRequestId}`);
+        console.log(`#NL Current AWS request ID: ${message.context.awsRequestId}`);
         setTimeout( // this is a hack to get around the delay before the debugger fully kicks in
           () => {
             const handler = module.parent.exports[HANDLER_NAME];
@@ -222,7 +222,7 @@ function runAsChild() {
       responseString += chunk;
     });
     responseStream.on('end', () => {
-      console.log(`[AWS Lambda Debugger] Child process info: ${responseString}`);
+      // console.log(`#NL Child process info: ${responseString}`);
       const response = JSON.parse(responseString);
       process.send(JSON.stringify({
         type: types.CHILD_READY,
