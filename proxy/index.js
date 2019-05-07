@@ -196,7 +196,7 @@ function runAsChild() {
         setTimeout( // this is a hack to get around the delay before the debugger fully kicks in
           () => {
             const handler = module.parent.exports[HANDLER_NAME];
-            debugger;
+            // debugger;
             // *** STEP INTO THE FOLLOWING LINE TO BEGIN STEPPING THROUGH YOUR FUNCTION ***
             const response = handler(message.event, message.context, callback);
             // handle promise returns - required for async handler support
