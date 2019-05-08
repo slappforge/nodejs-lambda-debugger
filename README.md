@@ -1,3 +1,6 @@
+
+This is a customized version of [Trek10 AWS Lambda Debugger](https://github.com/trek10inc/aws-lambda-debugger), which is being used by [SLAppForge Sigma](https://slappforge.com/sigma), the Serverless IDE. Kudos to [Rob Ribeiro](https://github.com/azurelogic) and [Trek10](https://www.trek10.com/) for the awesome work :pray:.
+
 # AWS Lambda Debugger
 
 ![image](https://user-images.githubusercontent.com/1966409/30458183-6e14b2d4-9978-11e7-8808-7e4950509823.png)
