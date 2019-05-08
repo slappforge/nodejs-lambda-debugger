@@ -1,16 +1,32 @@
 const WebSocket = require('ws');
 const types = require('../lib/messageTypes');
 const util = require('util');
+const http = require('http');
 
 const serialize = x => util.inspect(x, { depth: null });
 const log = (message) => {
   console.log(`${new Date().toISOString()}: ${message}`);
 };
 
+let socketCache = [];
+
 const lambdaServer = new WebSocket.Server({ port: 8080 });
 const userServer = new WebSocket.Server({ port: 9229 });
+const stopServer = http.createServer((req, res) => {
+  const key = req.url;
+  console.log('Stop debug request received for key', key);
 
-let socketCache = [];
+  const ws = new WebSocket(`ws://localhost:9229${key}`, [], {});
+  ws.on('open', () => {
+    ws.terminate();
+    res.statusCode = 200;
+    res.end('');
+  });
+});
+
+stopServer.listen(8090, () => {
+  console.log('Stop Server running at port 8090');
+});
 
 // todo: study memory usage under heavy debugging for docs
 // todo: keep improving connection cleanup, e.g.: abandoned connections
