@@ -20,6 +20,7 @@ const stopServer = http.createServer((req, res) => {
   ws.on('open', () => {
     ws.terminate();
     res.statusCode = 200;
+    res.setHeader('Access-Control-Allow-Origin', '*');
     res.end('');
   });
 });
