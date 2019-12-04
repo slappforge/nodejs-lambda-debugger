@@ -1,0 +1,29 @@
+{
+  "name": "slappforge-debug-client",
+  "version": "0.0.1",
+  "description": "The local client component of SLAppForge AWS Lambda debugger toolkit. This should be installed as a global Node module in the develope machine.",
+  "main": "index.js",
+  "bin": {
+    "slp-debug-client": "index.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/slappforge/nodejs-lambda-debugger.git"
+  },
+  "author": "SLAppForge <support@slappforge.com> (https://www.slappforge.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/slappforge/nodejs-lambda-debugger/issues"
+  },
+  "homepage": "https://github.com/slappforge/nodejs-lambda-debugger#readme",
+  "dependencies": {
+    "chalk": "^3.0.0",
+    "clear": "^0.1.0",
+    "figlet": "^1.2.4",
+    "minimist": "^1.2.0",
+    "ws": "3.3.1"
+  }
+}
