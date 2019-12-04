@@ -42,6 +42,7 @@ lambdaServer.on('connection', (proxySocket, request) => {
     if (foundCacheRecord) {
         log('Found conflicting key:', foundCacheRecord.key, 'in cache. Terminating old connection.');
         foundCacheRecord.proxySocket.close();
+        socketCache = socketCache.filter(record => record.key !== foundCacheRecord.key);
     }
 
     log('Registering proxy in cache under key:', lambdaConID);
