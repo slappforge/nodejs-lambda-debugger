@@ -1,0 +1,34 @@
+{
+  "name": "slappforge-lambda-debug-proxy",
+  "version": "0.0.1",
+  "description": "The lambda proxy component of SLAppForge AWS Lambda debugger toolkit. This should be installed as a dependency of the lambda function.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/slappforge/nodejs-lambda-debugger.git"
+  },
+  "keywords": [
+    "aws",
+    "lambda",
+    "node",
+    "nodejs",
+    "debugger",
+    "debug",
+    "serverless"
+  ],
+  "author": "Rob Ribeiro <azurelogic@gmail.com> (https://azurelogic.com)",
+  "contributors": [
+    "SLAppForge <support@slappforge.com> (https://www.slappforge.com)"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/slappforge/nodejs-lambda-debugger/issues"
+  },
+  "homepage": "https://github.com/slappforge/nodejs-lambda-debugger#readme",
+  "dependencies": {
+    "ws": "^7.2.0"
+  }
+}
