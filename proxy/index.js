@@ -1,7 +1,7 @@
 const cp = require('child_process');
 const WebSocket = require('ws');
 const http = require('http');
-const types = require('../lib/messageTypes');
+const types = require('./lib/MessageTypes');
 
 // parse handler name
 const handlerEnv = process.env._HANDLER && process.env._HANDLER.indexOf('.') > -1 ? process.env._HANDLER.split('.') : [null, 'defaultHandler']; // eslint-disable-line
