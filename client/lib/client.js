@@ -10,7 +10,6 @@ module.exports = {
 
         let bSocket;
         const server = http.createServer((req, res) => {
-            console.log("Request received...");
 
             if (!(bSocket && bSocket.OPEN)) {
                 printGreen('Connecting to debug broker server...');
@@ -22,12 +21,20 @@ module.exports = {
 
                 ws.on('message', function incoming(message) {
                     logIfVerbose(verbose, 'C-2-B', '>>>', message);
-                    bSocket.send(message);
+                    if (bSocket.OPENED) {
+                        bSocket.send(message);
+                    } else {
+                        bSocket.terminate();
+                    }
                 });
 
                 bSocket.on('message', (message) => {
                     logIfVerbose(verbose, 'B-2-C', '<<<', message);
-                    ws.send(message);
+                    if (ws.OPENED) {
+                        ws.send(message);
+                    } else {
+                        ws.terminate();
+                    }
                 });
 
                 bSocket.on('close', () => {
