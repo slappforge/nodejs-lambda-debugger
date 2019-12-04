@@ -1,6 +1,6 @@
 const WebSocket = require('ws');
 const http = require('http');
-const {logIfVerbose, printGreen} = require("./util");
+const {logIfVerbose, printGreen, printRed} = require("./util");
 
 const DEBUGGER_PORT = 9249;
 
@@ -32,12 +32,20 @@ module.exports = {
 
                 bSocket.on('close', () => {
                     printGreen("Debug broker server connection closed");
-                    ws.close();
+                    ws.terminate();
+                });
+
+                bSocket.on('error', (error) => {
+                    printRed('Debug broker server connection error:', error);
                 });
 
                 ws.on('close', () => {
                     printGreen("Debugger connection closed");
-                    bSocket.close();
+                    bSocket.terminate();
+                });
+
+                ws.on('error', (error) => {
+                    printRed('Debugger connection error:', error);
                 });
             });
 

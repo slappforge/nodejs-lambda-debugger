@@ -41,7 +41,7 @@ lambdaServer.on('connection', (proxySocket, request) => {
     const foundCacheRecord = socketCache.find(cacheRecord => dropLambdaIDPrefix(cacheRecord.key) === dropLambdaIDPrefix(lambdaConID));
     if (foundCacheRecord) {
         log('Found conflicting key:', foundCacheRecord.key, 'in cache. Terminating old connection.');
-        foundCacheRecord.proxySocket.close();
+        foundCacheRecord.proxySocket.terminate();
         socketCache = socketCache.filter(record => record.key !== foundCacheRecord.key);
     }
 
@@ -60,7 +60,7 @@ lambdaServer.on('connection', (proxySocket, request) => {
         const cacheRecord = socketCache.find(record => record.key === lambdaConID);
         if (cacheRecord && cacheRecord.userSocket) {
             if (cacheRecord.userSocket.readyState === WebSocket.OPEN) {
-                cacheRecord.userSocket.close();
+                cacheRecord.userSocket.terminate();
             }
             socketCache = socketCache.filter(record => record.key !== lambdaConID);
         }
@@ -80,11 +80,11 @@ userServer.on('connection', (userSocket, request) => {
         log('Found associated proxy in cache.', '(', foundCacheRecord.key, ')');
         if (foundCacheRecord.proxySocket.readyState !== WebSocket.OPEN) {
             log('Associated proxy is not in OPEN state. Terminating user connection');
-            userSocket.close();
+            userSocket.terminate();
             return;
         } else if (foundCacheRecord.userSocket) {
             log('Associated proxy already has a user connection. Terminating old user connection.');
-            foundCacheRecord.userSocket.close();
+            foundCacheRecord.userSocket.terminate();
         }
         proxySocket = foundCacheRecord.proxySocket; // eslint-disable-line
         foundCacheRecord.userSocket = userSocket;
@@ -93,7 +93,7 @@ userServer.on('connection', (userSocket, request) => {
     } else {
         // kick when lambda isn't connected
         log('No associated proxy found in cache. Terminating connection.');
-        userSocket.close();
+        userSocket.terminate();
         return;
     }
 
@@ -116,7 +116,7 @@ userServer.on('connection', (userSocket, request) => {
         const cacheRecord = socketCache.find(record => dropLambdaIDPrefix(record.key) === userConID);
         if (cacheRecord && cacheRecord.proxySocket) {
             if (cacheRecord.proxySocket.readyState === WebSocket.OPEN) {
-                cacheRecord.proxySocket.close();
+                cacheRecord.proxySocket.terminate();
             }
             socketCache = socketCache.filter(record => dropLambdaIDPrefix(record.key) !== userConID);
         }

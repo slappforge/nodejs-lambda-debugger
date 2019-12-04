@@ -77,8 +77,8 @@ function runAsProxy() {
             const message = JSON.parse(messageString);
             switch (message.type) {
                 case types.LAMBDA_CALLBACK: {
-                    brokerSocket.close();
-                    childSocket.close();
+                    brokerSocket.terminate();
+                    childSocket.terminate();
                     child.stdout.removeAllListeners('data');
                     child.stderr.removeAllListeners('data');
                     child.removeListener('message', childMessageHandler);
@@ -155,7 +155,7 @@ function runAsProxy() {
             // clean up on broker socket close
             brokerSocket.on('close', () => {
                 if (childSocket && childSocket.readyState === WebSocket.OPEN) {
-                    childSocket.close();
+                    childSocket.terminate();
                 }
             });
         });
