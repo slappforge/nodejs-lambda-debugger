@@ -9,7 +9,7 @@ const STOP_PORT = 8191;
 
 const serialize = x => util.inspect(x, {depth: null});
 const log = (...optionalParams) => {
-    console.log(`${new Date().toISOString()}:`, ...optionalParams);
+    console.log(new Date().toISOString(), ...optionalParams);
 };
 
 let socketCache = [];
@@ -147,4 +147,4 @@ function dropLambdaIDPrefix(fullID) {
     return fullID.substr(14);
 }
 
-log('Broker started', '( Lambda port:', LAMBDA_PORT, 'User port:', USER_PORT, ')');
+log('Broker started.', 'Lambda port:', LAMBDA_PORT, '& User port:', USER_PORT);

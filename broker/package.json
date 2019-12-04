@@ -4,6 +4,7 @@
   "description": "The broker server component of SLAppForge AWS Lambda debugger toolkit. This should be deployed in a publicly accessible server.",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

@@ -18,7 +18,7 @@ function currentTimeInMilliseconds() {
 }
 
 const log = (...optionalParams) => {
-    console.log(new Date().toISOString(), 'SLP-DEBUG-PROXY', ...optionalParams);
+    console.log('SLP-DEBUG-PROXY', ...optionalParams);
 };
 
 function runAsProxy() {
