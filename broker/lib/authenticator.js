@@ -1,9 +1,9 @@
 const auth = require('basic-auth');
 const axios = require('axios');
 
-const REMOTE_AUTH_ENDPOINT = '';
-const REMOTE_AUTH_HEADER_NAME = '';
-const REMOTE_AUTH_HEADER_VALUE = '';
+const REMOTE_AUTH_ENDPOINT = process.env.REMOTE_AUTH_ENDPOINT;
+const REMOTE_AUTH_HEADER_NAME = process.env.REMOTE_AUTH_HEADER_NAME;
+const REMOTE_AUTH_HEADER_VALUE = process.env.REMOTE_AUTH_HEADER_VALUE;
 
 let AUTH_KEY_CACHE = {};
 
