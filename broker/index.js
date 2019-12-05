@@ -147,7 +147,8 @@ userServer.on('connection', (userSocket, request) => {
             });
 
         } else {
-            log("Authentication failed for user connection with function ID:", userConID, 'Terminating user connection');
+            log("Authentication failed for user connection with function ID:", userConID);
+            log('Terminating user connection');
             userSocket.close(TERMINATION_ERROR_CODE, 'Authentication Failed');
         }
     });

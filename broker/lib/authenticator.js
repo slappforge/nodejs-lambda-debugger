@@ -35,7 +35,7 @@ module.exports = {
             logger("Loading auth keys from remote endpoint", REMOTE_AUTH_ENDPOINT);
             axios.get(REMOTE_AUTH_ENDPOINT, {
                 headers: {
-                    [REMOTE_AUTH_HEADER_NAME]: [REMOTE_AUTH_HEADER_VALUE]
+                    [REMOTE_AUTH_HEADER_NAME]: REMOTE_AUTH_HEADER_VALUE
                 }
             }).then(response => {
                 let data = response.data;
