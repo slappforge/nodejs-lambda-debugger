@@ -24,10 +24,12 @@ if (Object.keys(args).includes(HELP_CMD.shortArg) || Object.keys(args).includes(
     let server = getArg(args, CMD_ARGUMENTS.SERVER);
     let port = getArg(args, CMD_ARGUMENTS.PORT);
     let functionID = getArg(args, CMD_ARGUMENTS.FUNCTION);
+    let authKey = getArg(args, CMD_ARGUMENTS.AUTH_KEY);
+    let authSecret = getArg(args, CMD_ARGUMENTS.AUTH_SECRET);
     let verbose = getArg(args, CMD_ARGUMENTS.VERBOSE);
 
-    if (server && port && functionID) {
-        startClient(server, port, functionID, verbose);
+    if (server && port && functionID && authKey && authSecret) {
+        startClient(server, port, functionID, authKey, authSecret, verbose);
     } else {
         printRed("Missing some required arguments");
         printHelp();

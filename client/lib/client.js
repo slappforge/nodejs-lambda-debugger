@@ -1,23 +1,23 @@
 const WebSocket = require('ws');
 const http = require('http');
-const {logIfVerbose, printGreen, printRed, printYellow} = require("./util");
+const {logIfVerbose, printGreenWTime, printRedWTime, printYellowWTime} = require("./util");
 
 const DEBUGGER_PORT = 9249;
 
 module.exports = {
-    startClient: (host, port, funcID, verbose) => {
-        printGreen("Starting client...");
+    startClient: (host, port, funcID, authKey, authSecret, verbose) => {
+        printGreenWTime("Starting client...");
 
         let bSocket;
         const server = http.createServer((req, res) => {
 
             if (!(bSocket && (bSocket.readyState === WebSocket.OPEN))) {
-                printGreen('Connecting to debug broker server...');
-                bSocket = new WebSocket(`ws://${host}:${port}/${funcID}`);
+                printGreenWTime('Connecting to debug broker server...');
+                bSocket = new WebSocket(`ws://${authKey}:${authSecret}@${host}:${port}/${funcID}`);
             }
 
             bSocket.on('open', function () {
-                printGreen('Connected to debug broker server');
+                printGreenWTime('Connected to debug broker server');
                 res.end(JSON.stringify(
                     [
                         {
@@ -34,7 +34,7 @@ module.exports = {
         });
         const userServer = new WebSocket.Server({server});
         userServer.on('connection', function connection(ws) {
-            printGreen('Debugger connected');
+            printGreenWTime('Debugger connected');
 
             ws.on('message', function incoming(message) {
                 logIfVerbose(verbose, 'C-2-B', '>>>', message);
@@ -56,13 +56,15 @@ module.exports = {
 
             bSocket.on('close', (code, reason) => {
                 if (code === 1006) {
-                    printRed("Debug broker server connection terminated");
-                    printYellow(reason);
+                    printRedWTime("Debug broker server connection terminated");
+                    if (reason) {
+                        printYellowWTime(reason);
+                    }
                     if (ws.readyState === WebSocket.OPEN) {
                         ws.terminate();
                     }
                 } else {
-                    printGreen("Debug broker server connection closed");
+                    printGreenWTime("Debug broker server connection closed");
                     if (ws.readyState === WebSocket.OPEN) {
                         ws.close();
                     }
@@ -70,24 +72,24 @@ module.exports = {
             });
 
             bSocket.on('error', (error) => {
-                printRed('Debug broker server connection error:', error);
+                printRedWTime('Debug broker server connection error:', error);
             });
 
             ws.on('close', () => {
-                printGreen("Debugger connection closed");
+                printGreenWTime("Debugger connection closed");
                 if (bSocket.readyState === WebSocket.OPEN) {
                     bSocket.close();
                 }
             });
 
             ws.on('error', (error) => {
-                printRed('Debugger connection error:', error);
+                printRedWTime('Debugger connection error:', error);
             });
         });
 
         server.listen(DEBUGGER_PORT, () => {
-            printGreen('Client started successfully');
-            printGreen(`Execute the Lambda function and connect to localhost:${DEBUGGER_PORT} from your IDE debugger`);
+            printGreenWTime('Client started successfully');
+            printGreenWTime(`Execute the Lambda function and connect to localhost:${DEBUGGER_PORT} from your IDE debugger`);
         });
     }
 };

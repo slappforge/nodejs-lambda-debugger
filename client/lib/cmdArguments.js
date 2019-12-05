@@ -19,6 +19,18 @@ module.exports = {
             longArg: 'func',
             required: true
         },
+        AUTH_KEY: {
+            description: 'Authentication key received from SLAppForge Key Manager (https://www.slappforge.com/java-debug/)',
+            shortArg: 'k',
+            longArg: 'key',
+            required: true
+        },
+        AUTH_SECRET: {
+            description: 'Authentication secret received from SLAppForge Key Manager (https://www.slappforge.com/java-debug/)',
+            shortArg: 'x',
+            longArg: 'secret',
+            required: true
+        },
         VERBOSE: {
             description: 'Show verbose messages',
             shortArg: 'v',

@@ -2,6 +2,7 @@ const WebSocket = require('ws');
 const types = require('./lib/MessageTypes');
 const util = require('util');
 const http = require('http');
+const {authenticateConnection, loadAuthKeysFromRemote} = require("./lib/authenticator");
 
 const LAMBDA_PORT = 8181;
 const USER_PORT = 9239;
@@ -13,6 +14,9 @@ const serialize = x => util.inspect(x, {depth: null});
 const log = (...optionalParams) => {
     console.log(new Date().toISOString(), ...optionalParams);
 };
+
+loadAuthKeysFromRemote(log);
+setInterval(() => loadAuthKeysFromRemote(log), 300000);
 
 let socketCache = [];
 
@@ -75,69 +79,80 @@ userServer.on('connection', (userSocket, request) => {
     let userConID = cleanUpURL(request.url);
     log('A User connection incoming with function ID:', userConID);
 
-    let proxySocket;
-    const foundCacheRecord = socketCache.find(record => dropLambdaIDPrefix(record.key) === userConID);
-    if (foundCacheRecord) {
-        // kick anything after the first debugger or if the proxy socket isn't open
-        log('Found associated proxy in cache.', '(', foundCacheRecord.key, ')');
-        if (foundCacheRecord.proxySocket.readyState !== WebSocket.OPEN) {
-            log('Associated proxy is not in OPEN state. Terminating user connection');
-            userSocket.close(TERMINATION_ERROR_CODE, 'Lambda connection is not in OPEN state');
-            return;
-        } else if (foundCacheRecord.userSocket) {
-            log('Associated proxy already has a user connection. Terminating old user connection.');
-            foundCacheRecord.userSocket.close(TERMINATION_ERROR_CODE, 'New debugger session connected');
-        }
-        proxySocket = foundCacheRecord.proxySocket; // eslint-disable-line
-        foundCacheRecord.userSocket = userSocket;
-        log('Notifying associated proxy of user connection.');
-        proxySocket.send(JSON.stringify({type: types.USER_CONNECTED}));
-    } else {
-        // kick when lambda isn't connected
-        log('No associated proxy found in cache. Terminating connection.');
-        userSocket.close(TERMINATION_ERROR_CODE, 'No Lambda connection found. Probably Lambda is not running or the function ID is incorrect');
-        return;
-    }
-
-    // pass along V8 inspector messages
-    userSocket.on('message', (message) => {
-        if (proxySocket.readyState === WebSocket.OPEN) {
-            proxySocket.send(JSON.stringify({
-                type: types.V8_INSPECTOR_MESSAGE,
-                payload: message
-            }));
-        }
-    });
-
-    userSocket.on('error', (error) => {
-        log(`User socket error: ${serialize(error)}`);
-    });
-
-    userSocket.on('close', () => {
-        log('User socket initiated closure. Closing connections associated with request:', userConID);
-        const cacheRecord = socketCache.find(record => dropLambdaIDPrefix(record.key) === userConID);
-        if (cacheRecord && cacheRecord.proxySocket) {
-            if (cacheRecord.proxySocket.readyState === WebSocket.OPEN) {
-                cacheRecord.proxySocket.close();
-            }
-            socketCache = socketCache.filter(record => dropLambdaIDPrefix(record.key) !== userConID);
-        }
-    });
-
-    proxySocket.on('message', (messageString) => {
-        const message = JSON.parse(messageString);
-        switch (message.type) {
-            case types.V8_INSPECTOR_MESSAGE: {
-                if (userSocket.readyState === WebSocket.OPEN) {
-                    userSocket.send(message.payload);
+    authenticateConnection(request, log, (isAuthenticated) => {
+        if (isAuthenticated) {
+            log("Authenticated user connection with function ID:", userConID);
+            let proxySocket;
+            const foundCacheRecord = socketCache.find(record => dropLambdaIDPrefix(record.key) === userConID);
+            if (foundCacheRecord) {
+                // kick anything after the first debugger or if the proxy socket isn't open
+                log('Found associated proxy in cache.', '(', foundCacheRecord.key, ')');
+                if (foundCacheRecord.proxySocket.readyState !== WebSocket.OPEN) {
+                    log('Associated proxy is not in OPEN state. Terminating user connection');
+                    userSocket.close(TERMINATION_ERROR_CODE, 'Lambda connection is not in OPEN state');
+                    return;
+                } else if (foundCacheRecord.userSocket) {
+                    log('Associated proxy already has a user connection. Terminating old user connection.');
+                    foundCacheRecord.userSocket.close(TERMINATION_ERROR_CODE, 'New debugger session connected');
                 }
-                break;
+                proxySocket = foundCacheRecord.proxySocket; // eslint-disable-line
+                foundCacheRecord.userSocket = userSocket;
+                log('Notifying associated proxy of user connection.');
+                proxySocket.send(JSON.stringify({type: types.USER_CONNECTED}));
+            } else {
+                // kick when lambda isn't connected
+                log('No associated proxy found in cache. Terminating connection.');
+                userSocket.close(TERMINATION_ERROR_CODE, 'No Lambda connection found. Probably Lambda is not running or the function ID is incorrect');
+                return;
             }
-            default: {
-                break;
-            }
+
+            // pass along V8 inspector messages
+            userSocket.on('message', (message) => {
+                if (proxySocket.readyState === WebSocket.OPEN) {
+                    proxySocket.send(JSON.stringify({
+                        type: types.V8_INSPECTOR_MESSAGE,
+                        payload: message
+                    }));
+                }
+            });
+
+            userSocket.on('error', (error) => {
+                log(`User socket error: ${serialize(error)}`);
+            });
+
+            userSocket.on('close', () => {
+                log('User socket initiated closure. Closing connections associated with request:', userConID);
+                const cacheRecord = socketCache.find(record => dropLambdaIDPrefix(record.key) === userConID);
+                if (cacheRecord && cacheRecord.proxySocket) {
+                    if (cacheRecord.proxySocket.readyState === WebSocket.OPEN) {
+                        cacheRecord.proxySocket.close();
+                    }
+                    socketCache = socketCache.filter(record => dropLambdaIDPrefix(record.key) !== userConID);
+                }
+            });
+
+            proxySocket.on('message', (messageString) => {
+                const message = JSON.parse(messageString);
+                switch (message.type) {
+                    case types.V8_INSPECTOR_MESSAGE: {
+                        if (userSocket.readyState === WebSocket.OPEN) {
+                            userSocket.send(message.payload);
+                        }
+                        break;
+                    }
+                    default: {
+                        break;
+                    }
+                }
+            });
+
+        } else {
+            log("Authentication failed for user connection with function ID:", userConID);
+            userSocket.close(TERMINATION_ERROR_CODE, 'Authentication Failed');
         }
     });
+
+
 });
 
 function cleanUpURL(url) {
