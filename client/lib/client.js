@@ -13,7 +13,8 @@ module.exports = {
 
             if (!(bSocket && (bSocket.readyState === WebSocket.OPEN))) {
                 printGreenWTime('Connecting to debug broker server...');
-                bSocket = new WebSocket(`ws://${authKey}:${authSecret}@${host}:${port}/${funcID}`);
+                bSocket = new WebSocket(`ws://${authKey}:${authSecret}@${host}:${port}/${authKey}-${funcID}`);
+                // bSocket = new WebSocket(`ws://${authKey}:${authSecret}@${host}:${port}/${funcID}`);
             }
 
             bSocket.on('open', function () {
