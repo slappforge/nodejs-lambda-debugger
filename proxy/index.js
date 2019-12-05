@@ -3,10 +3,24 @@ const WebSocket = require('ws');
 const http = require('http');
 const types = require('./lib/MessageTypes');
 
+const DEBUGGER_ACTIVE_FLAG = 'SLP_DEBUGGER_ACTIVE';
+const DEBUGGER_PARAMETERS = {
+    BROKER_HOST: 'SLP_DEBUG_BROKER_HOST',
+    BROKER_PORT: 'SLP_DEBUG_BROKER_PORT',
+    FUNCTION_ID: 'SLP_DEBUG_FUNCTION_ID',
+    AUTH_KEY: 'SLP_DEBUG_AUTH_KEY',
+    AUTH_SECRET: 'SLP_DEBUG_AUTH_SECRET'
+};
+
 // parse handler name
 const handlerEnv = process.env._HANDLER && process.env._HANDLER.indexOf('.') > -1 ? process.env._HANDLER.split('.') : [null, 'defaultHandler']; // eslint-disable-line
 const HANDLER_NAME = handlerEnv[1];// eslint-disable-line
-const DEBUG_BROKER_PORT = process.env.DEBUGGER_BROKER_PORT || 8181;
+
+const SLP_DEBUG_BROKER_HOST = process.env[DEBUGGER_PARAMETERS.BROKER_HOST] || 'lambda-debug.slappforge.com';
+const SLP_DEBUG_BROKER_PORT = process.env[DEBUGGER_PARAMETERS.BROKER_PORT] || 8181;
+const SLP_DEBUG_FUNCTION_ID = process.env[DEBUGGER_PARAMETERS.FUNCTION_ID];
+const SLP_DEBUG_AUTH_KEY = process.env[DEBUGGER_PARAMETERS.AUTH_KEY];
+const SLP_DEBUG_AUTH_SECRET = process.env[DEBUGGER_PARAMETERS.AUTH_SECRET];
 
 let child;
 let childSocket;
@@ -22,10 +36,23 @@ const log = (...optionalParams) => {
 };
 
 function runAsProxy() {
-    if (!process.env.DEBUGGER_ACTIVE || process.env.DEBUGGER_ACTIVE === 'false') {
+
+    let isDebuggerActive = true;
+    if (!process.env[DEBUGGER_ACTIVE_FLAG] || process.env[DEBUGGER_ACTIVE_FLAG] === 'false') {
+        isDebuggerActive = false;
+    } else if (!SLP_DEBUG_FUNCTION_ID) {
+        log('Missing environment variable:', DEBUGGER_PARAMETERS.FUNCTION_ID);
+        isDebuggerActive = false;
+    } else if (!SLP_DEBUG_AUTH_KEY || !SLP_DEBUG_AUTH_SECRET) {
+        log('Missing environment variable:', DEBUGGER_PARAMETERS.AUTH_KEY, 'and/or', DEBUGGER_PARAMETERS.AUTH_SECRET);
+        isDebuggerActive = false;
+    }
+
+    if (!isDebuggerActive) {
         log('Debugger Status: INACTIVE');
         return;
     }
+
     log('Debugger Status: ACTIVE');
     let childResolver;
     let debuggerUrl;
@@ -101,8 +128,11 @@ function runAsProxy() {
 
         child.on('message', childMessageHandler);
 
+        let authSegment = `${SLP_DEBUG_AUTH_KEY}:${SLP_DEBUG_AUTH_SECRET}`;
+        let addressSegment = `${SLP_DEBUG_BROKER_HOST}:${SLP_DEBUG_BROKER_PORT}`;
+        let idSegment = `${Date.now()}-${SLP_DEBUG_AUTH_KEY}-${SLP_DEBUG_FUNCTION_ID}`;
         // connect to broker
-        brokerSocket = new WebSocket(`ws://${process.env.DEBUGGER_BROKER_ADDRESS}:${DEBUG_BROKER_PORT}/${Date.now()}-${process.env.DEBUGGER_FUNCTION_ID}`);
+        brokerSocket = new WebSocket(`ws://${authSegment}@${addressSegment}/${idSegment}`);
 
         // wait on CHILD_READY
         childPromise.then(() => {
