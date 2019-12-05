@@ -23,14 +23,23 @@ let socketCache = [];
 const lambdaServer = new WebSocket.Server({port: LAMBDA_PORT});
 const userServer = new WebSocket.Server({port: USER_PORT});
 const stopServer = http.createServer((req, res) => {
-    const key = req.url;
+    const key = cleanUpURL(req.url);
     log('Stop debug request received for key', key);
+    authenticateConnection(req, log, (isAuthenticated) => {
+        if (isAuthenticated) {
+            log('Executing stop debug operation...');
+            const foundCacheRecord = socketCache.find(cacheRecord => cacheRecord.key === key);
+            if (foundCacheRecord && foundCacheRecord.proxySocket && (foundCacheRecord.proxySocket.readyState === WebSocket.OPEN)) {
+                foundCacheRecord.proxySocket.terminate();
+            }
+            res.statusCode = 200;
+            res.end('');
 
-    const ws = new WebSocket(`ws://localhost:${USER_PORT}${key}`, [], {});
-    ws.on('open', () => {
-        ws.terminate();
-        res.statusCode = 200;
-        res.end('');
+        } else {
+            log("Authentication Failed. Ignoring stop request");
+            res.statusCode = 401;
+            res.end('');
+        }
     });
 });
 
@@ -44,31 +53,42 @@ lambdaServer.on('connection', (proxySocket, request) => {
     let lambdaConID = cleanUpURL(request.url);
     log('A Lambda connection incoming with function ID:', lambdaConID);
 
-    const foundCacheRecord = socketCache.find(cacheRecord => dropLambdaIDPrefix(cacheRecord.key) === dropLambdaIDPrefix(lambdaConID));
-    if (foundCacheRecord) {
-        log('Found conflicting key:', foundCacheRecord.key, 'in cache. Terminating old connection.');
-        foundCacheRecord.proxySocket.terminate();
-        socketCache = socketCache.filter(record => record.key !== foundCacheRecord.key);
-    }
+    authenticateConnection(request, log, (isAuthenticated) => {
+        if (isAuthenticated) {
+            log("Authenticated lambda connection with function ID:", lambdaConID);
 
-    log('Registering proxy in cache under key:', lambdaConID);
-    socketCache.push({
-        key: lambdaConID,
-        proxySocket,
-    });
-
-    proxySocket.on('error', (error) => {
-        log(`Proxy socket error: ${serialize(error)}`);
-    });
-
-    proxySocket.on('close', () => {
-        log('Proxy socket initiated closure. Closing connections associated with key:', lambdaConID);
-        const cacheRecord = socketCache.find(record => record.key === lambdaConID);
-        if (cacheRecord && cacheRecord.userSocket) {
-            if (cacheRecord.userSocket.readyState === WebSocket.OPEN) {
-                cacheRecord.userSocket.close();
+            const foundCacheRecord = socketCache.find(cacheRecord => dropLambdaIDPrefix(cacheRecord.key) === dropLambdaIDPrefix(lambdaConID));
+            if (foundCacheRecord) {
+                log('Found conflicting key:', foundCacheRecord.key, 'in cache. Terminating old connection.');
+                foundCacheRecord.proxySocket.terminate();
+                socketCache = socketCache.filter(record => record.key !== foundCacheRecord.key);
             }
-            socketCache = socketCache.filter(record => record.key !== lambdaConID);
+
+            log('Registering proxy in cache under key:', lambdaConID);
+            socketCache.push({
+                key: lambdaConID,
+                proxySocket,
+            });
+
+            proxySocket.on('error', (error) => {
+                log(`Proxy socket error: ${serialize(error)}`);
+            });
+
+            proxySocket.on('close', () => {
+                log('Proxy socket initiated closure. Closing connections associated with key:', lambdaConID);
+                const cacheRecord = socketCache.find(record => record.key === lambdaConID);
+                if (cacheRecord && cacheRecord.userSocket) {
+                    if (cacheRecord.userSocket.readyState === WebSocket.OPEN) {
+                        cacheRecord.userSocket.close();
+                    }
+                    socketCache = socketCache.filter(record => record.key !== lambdaConID);
+                }
+            });
+        } else {
+            // TODO: Check why Lambda execution still waits for the debugger
+            log("Authentication failed for lambda connection with function ID:", lambdaConID);
+            log('Terminating lambda connection');
+            proxySocket.close();
         }
     });
 });
