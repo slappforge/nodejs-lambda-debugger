@@ -7,6 +7,8 @@ const LAMBDA_PORT = 8181;
 const USER_PORT = 9239;
 const STOP_PORT = 8191;
 
+const TERMINATION_ERROR_CODE = 4001;
+
 const serialize = x => util.inspect(x, {depth: null});
 const log = (...optionalParams) => {
     console.log(new Date().toISOString(), ...optionalParams);
@@ -60,7 +62,7 @@ lambdaServer.on('connection', (proxySocket, request) => {
         const cacheRecord = socketCache.find(record => record.key === lambdaConID);
         if (cacheRecord && cacheRecord.userSocket) {
             if (cacheRecord.userSocket.readyState === WebSocket.OPEN) {
-                cacheRecord.userSocket.terminate();
+                cacheRecord.userSocket.close();
             }
             socketCache = socketCache.filter(record => record.key !== lambdaConID);
         }
@@ -80,11 +82,11 @@ userServer.on('connection', (userSocket, request) => {
         log('Found associated proxy in cache.', '(', foundCacheRecord.key, ')');
         if (foundCacheRecord.proxySocket.readyState !== WebSocket.OPEN) {
             log('Associated proxy is not in OPEN state. Terminating user connection');
-            userSocket.terminate();
+            userSocket.close(TERMINATION_ERROR_CODE, 'Lambda connection is not in OPEN state');
             return;
         } else if (foundCacheRecord.userSocket) {
             log('Associated proxy already has a user connection. Terminating old user connection.');
-            foundCacheRecord.userSocket.terminate();
+            foundCacheRecord.userSocket.close(TERMINATION_ERROR_CODE, 'New debugger session connected');
         }
         proxySocket = foundCacheRecord.proxySocket; // eslint-disable-line
         foundCacheRecord.userSocket = userSocket;
@@ -93,7 +95,7 @@ userServer.on('connection', (userSocket, request) => {
     } else {
         // kick when lambda isn't connected
         log('No associated proxy found in cache. Terminating connection.');
-        userSocket.terminate();
+        userSocket.close(TERMINATION_ERROR_CODE, 'No Lambda connection found. Probably Lambda is not running or the function ID is incorrect');
         return;
     }
 
@@ -116,7 +118,7 @@ userServer.on('connection', (userSocket, request) => {
         const cacheRecord = socketCache.find(record => dropLambdaIDPrefix(record.key) === userConID);
         if (cacheRecord && cacheRecord.proxySocket) {
             if (cacheRecord.proxySocket.readyState === WebSocket.OPEN) {
-                cacheRecord.proxySocket.terminate();
+                cacheRecord.proxySocket.close();
             }
             socketCache = socketCache.filter(record => dropLambdaIDPrefix(record.key) !== userConID);
         }
