@@ -85,10 +85,9 @@ lambdaServer.on('connection', (proxySocket, request) => {
                 }
             });
         } else {
-            // TODO: Check why Lambda execution still waits for the debugger
             log("Authentication failed for lambda connection with function ID:", lambdaConID);
             log('Terminating lambda connection');
-            proxySocket.close(TERMINATION_ERROR_CODE, 'Authentication Failed');
+            proxySocket.close(TERMINATION_ERROR_CODE, 'Authentication Failure');
         }
     });
 });
