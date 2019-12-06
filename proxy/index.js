@@ -53,7 +53,7 @@ function runAsProxy() {
         return;
     }
 
-    console.log('Debugger Status: ACTIVE');
+    log('Debugger Status: ACTIVE');
     let childResolver;
     let debuggerUrl;
     const childPromise = new Promise((resolve) => {
@@ -131,8 +131,25 @@ function runAsProxy() {
         let authSegment = `${SLP_DEBUG_AUTH_KEY}:${SLP_DEBUG_AUTH_SECRET}`;
         let addressSegment = `${SLP_DEBUG_BROKER_HOST}:${SLP_DEBUG_BROKER_PORT}`;
         let idSegment = `${Date.now()}-${SLP_DEBUG_AUTH_KEY}-${SLP_DEBUG_FUNCTION_ID}`;
+
+        let prematureBrokerCloseHandler = (code, reason) => {
+            let errorMsg = 'Debug Broker server connection failed';
+            if (reason) {
+                errorMsg.concat(' due to', reason);
+            }
+            log(errorMsg);
+            if (childSocket && (childSocket.readyState === WebSocket.OPEN)) {
+                childSocket.terminate();
+            }
+            child.stdout.removeAllListeners('data');
+            child.stderr.removeAllListeners('data');
+            child.removeListener('message', childMessageHandler);
+            callback(errorMsg);
+        };
+
         // connect to broker
         brokerSocket = new WebSocket(`ws://${authSegment}@${addressSegment}/${idSegment}`);
+        brokerSocket.on('close', prematureBrokerCloseHandler);
 
         // wait on CHILD_READY
         childPromise.then(() => {
@@ -181,6 +198,9 @@ function runAsProxy() {
                     }
                 }
             });
+
+            // Remove the premature close handler and add new close handler
+            brokerSocket.removeEventListener('close', prematureBrokerCloseHandler);
 
             // clean up on broker socket close
             brokerSocket.on('close', () => {
