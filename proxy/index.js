@@ -133,7 +133,7 @@ function runAsProxy() {
         let idSegment = `${Date.now()}-${SLP_DEBUG_AUTH_KEY}-${SLP_DEBUG_FUNCTION_ID}`;
 
         let prematureBrokerCloseHandler = (code, reason) => {
-            let errorMsg = `Debug Broker server connection failed ${reason ? ` due to ${reason}` : ''}`;
+            let errorMsg = `Debug Broker server connection failed ${reason ? `due to ${reason}` : ''}`;
             log(errorMsg);
             if (childSocket && (childSocket.readyState === WebSocket.OPEN)) {
                 childSocket.terminate();
