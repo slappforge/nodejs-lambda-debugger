@@ -1,9 +1,9 @@
 module.exports = {
     CMD_ARGUMENTS: {
         FUNCTION: {
-            description: 'Unique ID of the function',
+            description: 'Unique ID for the session',
             shortArg: 'f',
-            longArg: 'func',
+            longArg: 'session',
             required: true
         },
         AUTH_KEY: {
