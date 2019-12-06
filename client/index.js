@@ -10,7 +10,7 @@ const {printYellow, getArg, printRed} = require("./lib/util");
 clear();
 
 console.log(
-    chalk.blue(
+    chalk.cyan(
         figlet.textSync('SLAppForge Debug Client', {font: 'doom', horizontalLayout: 'fitted'})
     )
 );
@@ -40,7 +40,12 @@ function printHelp() {
     printYellow("Usage: slp-debug-client [options]\n");
     printYellow("Options:");
     Object.values(CMD_ARGUMENTS).forEach(cmdArg => {
-        printYellow("\t", `-${cmdArg.shortArg},`, `--${cmdArg.longArg}`, '\t', cmdArg.description,
-            cmdArg.required ? '(Required)' : '(Optional)', cmdArg.defaultValue ? `(Default: ${cmdArg.defaultValue})` : '');
+        let line = chalk.yellow("\t", `-${cmdArg.shortArg},`, `--${cmdArg.longArg}`, '\t');
+        line += (cmdArg.required) ? chalk.red('Required') : chalk.green('Optional');
+        line += chalk.yellow('    ', cmdArg.description);
+        if (cmdArg.defaultValue) {
+            line += chalk.blue(` (Default: ${cmdArg.defaultValue})`);
+        }
+        console.log(line);
     });
 }

@@ -1,18 +1,5 @@
 module.exports = {
     CMD_ARGUMENTS: {
-        SERVER: {
-            description: 'Host Name or IP of the debug broker server',
-            shortArg: 's',
-            longArg: 'server',
-            required: true
-        },
-        PORT: {
-            description: 'User connection port of the debug broker server',
-            shortArg: 'p',
-            longArg: 'port',
-            required: false,
-            defaultValue: 2939
-        },
         FUNCTION: {
             description: 'Unique ID of the function',
             shortArg: 'f',
@@ -30,6 +17,20 @@ module.exports = {
             shortArg: 'x',
             longArg: 'secret',
             required: true
+        },
+        SERVER: {
+            description: 'Host Name or IP of the debug broker server',
+            shortArg: 's',
+            longArg: 'server',
+            required: false,
+            defaultValue: 'lambda-debug.slappforge.com'
+        },
+        PORT: {
+            description: 'User connection port of the debug broker server',
+            shortArg: 'p',
+            longArg: 'port',
+            required: false,
+            defaultValue: 2939
         },
         VERBOSE: {
             description: 'Show verbose messages',
