@@ -53,7 +53,7 @@ function runAsProxy() {
         return;
     }
 
-    log('Debugger Status: ACTIVE');
+    console.log('Debugger Status: ACTIVE');
     let childResolver;
     let debuggerUrl;
     const childPromise = new Promise((resolve) => {

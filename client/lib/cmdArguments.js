@@ -30,7 +30,7 @@ module.exports = {
             shortArg: 'p',
             longArg: 'port',
             required: false,
-            defaultValue: 2939
+            defaultValue: 9239
         },
         VERBOSE: {
             description: 'Show verbose messages',

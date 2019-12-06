@@ -1,11 +1,19 @@
 const WebSocket = require('ws');
 const http = require('http');
-const {logIfVerbose, printGreenWTime, printRedWTime, printYellowWTime} = require("./util");
+const {logIfVerbose, printGreenWTime, printRedWTime, printYellowWTime, printYellow} = require("./util");
 
 const DEBUGGER_PORT = 9249;
 
 module.exports = {
     startClient: (host, port, funcID, authKey, authSecret, verbose) => {
+
+        printYellow('Parameters In Use:');
+        printYellow('  ', 'Broker Host:', '\t', host);
+        printYellow('  ', 'Broker Port:', '\t', port);
+        printYellow('  ', 'Function ID:', '\t', funcID);
+        printYellow('  ', 'Auth Key:', '\t\t', authKey);
+        printYellow('  ', 'Auth Secret:', '\t', authSecret);
+
         printGreenWTime("Starting client...");
 
         let bSocket;
