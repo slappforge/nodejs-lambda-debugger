@@ -128,10 +128,11 @@ Then it should be invoked via a terminal providing the following arguments.
 slp-debug-client -f=MyFunction -k=abcd=efgh-1234-5678 -x=abc123def456ghi789
 ```
 
-#### Configuring Up IDE Debugger
+#### Configuring the IDE Debugger
 
-Configuring steps for the IDE debugger varies based on the IDE in use. This toolkit is currently tested with Jetbrains 
-IntelliJ IDEA and Jetbrains WebStorm IDEs. It might work with other IDEs that generally support NodeJS remote debugging.
+Configuring steps for the IDE debugger varies based on the IDE in use. This toolkit has been currently tested with 
+Jetbrains IntelliJ IDEA and Jetbrains WebStorm IDEs. It might work with other IDEs that generally support NodeJS remote 
+debugging.
 
 **IntelliJ IDEA / WebStorm**
 
@@ -144,11 +145,11 @@ NodeJS/Chrome** as the type from left side panel
 
 ### Running the Debugger 
 
-* First start the **Local Client** providing the necessary parameters as mentioned [here](####Installing-and-running-the-Local-Client)
+* First start the **Local Client** providing the necessary parameters as mentioned [here](#Installing-and-running-the-Local-Client)
 * Then invoke the Lambda with debugging enabled. You can do this either using the Test functionality on the AWS Lambda
 console, or by triggering an actual event such as API Gateway request, S3 operation, etc.
-* Then the Lambda execution will suspended at the `debugger` line waiting for a debugger to connect
-* Finally invoke the Debugger from the IDE and wait for a couple of seconds for it to connect.
+* Then the Lambda execution will suspend at the `debugger` line waiting for a debugger to connect
+* Finally invoke the Debugger from the IDE and wait for a couple of seconds for it to connect through
 * Happy Debugging!
 ---
 
