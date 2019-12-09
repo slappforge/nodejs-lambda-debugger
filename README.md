@@ -73,6 +73,9 @@ After adding the proxy component as a dependency using one of the options, requi
 file that contains the Lambda handler that you want to debug. And also add a `debugger` line at the start of the handler
 function, so that the execution will be suspended at that point until the debugger is connected.
 
+Also make sure to set a reasonable **Timeout** value for the Lambda function, so that you have enough time for debugging,
+before the Lambda function runs out of time.
+
 ```
 exports.handler = async (event) => {
     debugger;
@@ -101,9 +104,53 @@ In addition to the above, following optional environment variables can be used t
 | Name | Required | Description  |
 |------|:--------:| -------------|
 |`SLAPP_DEBUG_BROKER_HOST` |:x: | This is the host name or the IP address of the Broker server. Default value is `lambda-debug.slappforge.com`
-|`SLAPP_DEBUG_BROKER_PORT` |:x: | This is the lambda facing port of the Broker server. Default value is `9239`
+|`SLAPP_DEBUG_BROKER_PORT` |:x: | This is the lambda facing port of the Broker server. Default value is `8181`
 
+#### Installing and running the Local Client
+
+The Local Client module of the toolkit should be installed as a global NPM dependency on the developer machine.
+```
+npm i slappforge-debug-client -g
+```
+
+Then it should be invoked via a terminal providing the following arguments.
+
+| Short Arg | Long Arg | Required | Description  |
+|:---------:|---------:|----------| -------------|
+|`-f` | `--session` |:white_check_mark: | This is a unique ID set as the `SLAPP_SESSION` variable of the Lambda function
+|`-k` |`--key` |:white_check_mark: | This is the Access Key obtained from the access key manager
+|`-x` |`--secret` |:white_check_mark: | This is the Access Secret obtained from the access key manager
+|`-s` |`--server` |:x: | This is the host name or the IP address of the Broker server. Default value is `lambda-debug.slappforge.com`
+|`-p` |`--port` |:x: | This is the debugger facing port of the Broker server. Default value is `9239`
+|`-v` |`--verbose` |:x: | Flag to enable verbose logging for the client
                                                            
+```
+slp-debug-client -f=MyFunction -k=abcd=efgh-1234-5678 -x=abc123def456ghi789
+```
+
+#### Configuring Up IDE Debugger
+
+Configuring steps for the IDE debugger varies based on the IDE in use. This toolkit is currently tested with Jetbrains 
+IntelliJ IDEA and Jetbrains WebStorm IDEs. It might work with other IDEs that generally support NodeJS remote debugging.
+
+**IntelliJ IDEA / WebStorm**
+
+* Open the project containing the Lambda source code and create a new **Run/Debug Configuration** selecting **Attach to 
+NodeJS/Chrome** as the type from left side panel
+* Provide any name for the Run/Debug profile
+* Configure the **Host** as `localhost` and the **Port** as `9249`
+* Select the **Attach to** type as `Chrome or NodeJS > 6.3 started with --inspect`
+* Click **Apply** and then **OK**
+
+### Running the Debugger 
+
+* First start the **Local Client** providing the necessary parameters as mentioned [here](####Installing-and-running-the-Local-Client)
+* Then invoke the Lambda with debugging enabled. You can do this either using the Test functionality on the AWS Lambda
+console, or by triggering an actual event such as API Gateway request, S3 operation, etc.
+* Then the Lambda execution will suspended at the `debugger` line waiting for a debugger to connect
+* Finally invoke the Debugger from the IDE and wait for a couple of seconds for it to connect.
+* Happy Debugging!
+---
 
 This toolkit is developed based on the [Trek10 AWS Lambda Debugger](https://github.com/trek10inc/aws-lambda-debugger), 
 Kudos to [Rob Ribeiro](https://github.com/azurelogic) and [Trek10](https://www.trek10.com/) for the awesome work :pray:.
