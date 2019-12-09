@@ -1,0 +1,31 @@
+{
+  "name": "slappforge-lambda-debug-layer",
+  "version": "1.0.2",
+  "description": "This an AWS NodeJS Lambda layer that contains the lambda proxy component of SLAppForge AWS Lambda debugger toolkit",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/slappforge/nodejs-lambda-debugger.git"
+  },
+  "author": "SLAppForge <support@slappforge.com> (https://www.slappforge.com)",
+  "license": "MIT",
+  "keywords": [
+    "aws",
+    "lambda",
+    "node",
+    "nodejs",
+    "debugger",
+    "debug",
+    "serverless"
+  ],
+  "bugs": {
+    "url": "https://github.com/slappforge/nodejs-lambda-debugger/issues"
+  },
+  "homepage": "https://github.com/slappforge/nodejs-lambda-debugger#readme",
+  "dependencies": {
+    "slappforge-lambda-debug-proxy": "^1.0.2"
+  }
+}
