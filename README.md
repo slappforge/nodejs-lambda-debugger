@@ -116,7 +116,7 @@ npm i slappforge-debug-client -g
 Then it should be invoked via a terminal providing the following arguments.
 
 | Short Arg | Long Arg | Required | Description  |
-|:---------:|---------:|----------| -------------|
+|:---------:|---------|:----------:| -------------|
 |`-f` | `--session` |:white_check_mark: | This is a unique ID set as the `SLAPP_SESSION` variable of the Lambda function
 |`-k` |`--key` |:white_check_mark: | This is the Access Key obtained from the access key manager
 |`-x` |`--secret` |:white_check_mark: | This is the Access Secret obtained from the access key manager
