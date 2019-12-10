@@ -28,17 +28,13 @@ Secret**.
 ## Using proxy within the Lambda function
 
 After adding this proxy component as a dependency using one of the options, require the package at the very end of the 
-file that contains the Lambda handler that you want to debug. And also add a `debugger` line at the start of the handler
-function, so that the execution will be suspended at that point until the debugger is connected.
+file that contains the Lambda handler that you want to debug.
 
 Also make sure to set a reasonable **Timeout** value for the Lambda function, so that you have enough time for debugging,
 before the Lambda function runs out of time.
 
 ```
 exports.handler = async (event) => {
-    debugger;
-
-    // Your code comes after this
     console.log(event);
     return 'Hello World!'; 
 };

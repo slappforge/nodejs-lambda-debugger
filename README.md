@@ -70,17 +70,13 @@ arn:aws:lambda:us-east-1:892904900711:layer:slappforge-lambda-debug-layer:1
 ```
 
 After adding the proxy component as a dependency using one of the options, require the package at the very end of the 
-file that contains the Lambda handler that you want to debug. And also add a `debugger` line at the start of the handler
-function, so that the execution will be suspended at that point until the debugger is connected.
+file that contains the Lambda handler that you want to debug.
 
 Also make sure to set a reasonable **Timeout** value for the Lambda function, so that you have enough time for debugging,
 before the Lambda function runs out of time.
 
 ```
 exports.handler = async (event) => {
-    debugger;
-
-    // Your code comes after this
     console.log(event);
     return 'Hello World!'; 
 };
@@ -148,8 +144,10 @@ NodeJS/Chrome** as the type from left side panel
 * First start the **Local Client** providing the necessary parameters as mentioned [here](#Installing-and-running-the-Local-Client)
 * Then invoke the Lambda with debugging enabled. You can do this either using the Test functionality on the AWS Lambda
 console, or by triggering an actual event such as API Gateway request, S3 operation, etc.
-* Then the Lambda execution will suspend at the `debugger` line waiting for a debugger to connect
-* Finally invoke the Debugger from the IDE and wait for a couple of seconds for it to connect through
+* Then the Lambda execution will suspend waiting for a debugger to connect
+* Finally invoke the Debugger from the IDE and wait for a couple of seconds for it to connect through. Make sure to add 
+at least one debug breakpoint **before** you invoke the IDE debugger, so that the Lambda execution will suspend at that 
+point.
 * Happy Debugging!
 ---
 
