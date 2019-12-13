@@ -66,7 +66,7 @@ npm i slappforge-lambda-debug-proxy --save
 
 Add the Lambda Layer with the following ARN to your Lambda function.
 ```
-arn:aws:lambda:us-east-1:892904900711:layer:slappforge-lambda-debug-layer:1
+arn:aws:lambda:us-east-1:892904900711:layer:slappforge-lambda-debug-layer:2
 ```
 
 After adding the proxy component as a dependency using one of the options, require the package at the very end of the 
@@ -90,7 +90,7 @@ Then the following environment variables must be set for the Lambda function wit
 
 | Name | Required | Description  |
 |------|:--------:| -------------|
-|`SLP_DEBUGGER_ACTIVE` |:white_check_mark: | This is the flag that indicates whether the Lambda should be invoked in debug mode or not. Setting this to `true` will enable debugging.
+|`SLAPP_DEBUGGER_ACTIVE` |:white_check_mark: | This is the flag that indicates whether the Lambda should be invoked in debug mode or not. Setting this to `true` will enable debugging.
 |`SLAPP_KEY` |:white_check_mark: | This is the Access Key obtained from the access key manager
 |`SLAPP_SECRET` |:white_check_mark: | This is the Access Secret obtained from the access key manager
 |`SLAPP_SESSION` |:white_check_mark: | This is a unique ID to distinguish this Lambda function for debugger to connect. This can be any string value.

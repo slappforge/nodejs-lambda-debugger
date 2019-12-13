@@ -48,7 +48,7 @@ Then the following environment variables must be set for the Lambda function wit
 
 | Name | Required | Description  |
 |------|:--------:| -------------|
-|`SLP_DEBUGGER_ACTIVE` |:white_check_mark: | This is the flag that indicates whether the Lambda should be invoked in debug mode or not. Setting this to `true` will enable debugging.
+|`SLAPP_DEBUGGER_ACTIVE` |:white_check_mark: | This is the flag that indicates whether the Lambda should be invoked in debug mode or not. Setting this to `true` will enable debugging.
 |`SLAPP_KEY` |:white_check_mark: | This is the Access Key obtained from the access key manager
 |`SLAPP_SECRET` |:white_check_mark: | This is the Access Secret obtained from the access key manager
 |`SLAPP_SESSION` |:white_check_mark: | This is a unique ID to distinguish this Lambda function for debugger to connect. This can be any string value.

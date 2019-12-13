@@ -26,6 +26,6 @@
   },
   "homepage": "https://github.com/slappforge/nodejs-lambda-debugger#readme",
   "dependencies": {
-    "slappforge-lambda-debug-proxy": "^1.0.2"
+    "slappforge-lambda-debug-proxy": "1.0.3"
   }
 }

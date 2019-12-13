@@ -1,6 +1,6 @@
 {
   "name": "slappforge-lambda-debug-proxy",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "The lambda proxy component of SLAppForge AWS Lambda debugger toolkit. This should be installed as a dependency of the lambda function.",
   "main": "index.js",
   "scripts": {

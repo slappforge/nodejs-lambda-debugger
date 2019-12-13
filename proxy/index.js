@@ -3,7 +3,7 @@ const WebSocket = require('ws');
 const http = require('http');
 const types = require('./lib/MessageTypes');
 
-const DEBUGGER_ACTIVE_FLAG = 'SLP_DEBUGGER_ACTIVE';
+const DEBUGGER_ACTIVE_FLAG = 'SLAPP_DEBUGGER_ACTIVE';
 const DEBUGGER_PARAMETERS = {
     BROKER_HOST: 'SLAPP_DEBUG_BROKER_HOST',
     BROKER_PORT: 'SLAPP_DEBUG_BROKER_PORT',
