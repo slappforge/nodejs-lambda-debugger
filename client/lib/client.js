@@ -87,7 +87,7 @@ module.exports = {
                         let newMsg = {
                             ...msgObj,
                             method: METHOD_NAMES.SET_BRK_PT,
-                            params: {"lineNumber": 1, "urlRegex": ".*"}
+                            params: {"lineNumber": 1, "urlRegex": ".*\\.js"}
                         };
                         message = JSON.stringify(newMsg);
                     }

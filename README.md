@@ -127,8 +127,8 @@ slp-debug-client -f=MyFunction -k=abcd=efgh-1234-5678 -x=abc123def456ghi789
 #### Configuring the IDE Debugger
 
 Configuring steps for the IDE debugger varies based on the IDE in use. This toolkit has been currently tested with 
-Jetbrains IntelliJ IDEA and Jetbrains WebStorm IDEs. It might work with other IDEs that generally support NodeJS remote 
-debugging.
+Jetbrains IntelliJ IDEA, Jetbrains WebStorm and VS Code IDEs. It might work with other IDEs that generally support NodeJS 
+remote debugging.
 
 **IntelliJ IDEA / WebStorm**
 
@@ -138,6 +138,38 @@ NodeJS/Chrome** as the type from left side panel
 * Configure the **Host** as `localhost` and the **Port** as `9249`
 * Select the **Attach to** type as `Chrome or NodeJS > 6.3 started with --inspect`
 * Click **Apply** and then **OK**
+
+**VS Code**
+
+* Open the workspace containing the Lambda source code and add a new launch configuration similar to below. You can
+provide any name for the `name` field.
+```
+{
+    "type": "node",
+    "request": "attach",
+    "name": "Attach to Remote Lambda",
+    "address": "127.0.0.1",
+    "port": 9249,
+    "localRoot": "${workspaceFolder}",
+    "remoteRoot": "/var/task",
+    "outFiles": [
+        "${workspaceFolder}/**/*.js"
+    ]
+}
+```
+* If your Lambda source code is in a sub directory of the current workspace, you have to append that sub path to the 
+`localRoot` field.
+```
+"localRoot": "${workspaceFolder}/subPath"
+```
+
+* Similarly, if your Lambda deployment bundle has an enclosing directory, you have to append that also to the 
+`remoteRoot` field.
+```
+"remoteRoot": "/var/task/MyLambda"
+```
+
+* Finally save the `launch.json` file
 
 ### Running the Debugger 
 
