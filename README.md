@@ -84,6 +84,19 @@ exports.handler = async (event) => {
 require('slappforge-lambda-debug-proxy');
 ```
 
+> **Important**
+>
+> If you intend to use **Visual Studio Code** as the IDE for the debugging, please add a `debugger;` statement as the 
+> very first line of the function handler.
+> ```
+> exports.handler = async (event) => {
+>   debugger;
+>   // rest of the function code
+> };
+> 
+> require('slappforge-lambda-debug-proxy');
+> ```
+
 #### Configuring Lambda environment variables
 
 Then the following environment variables must be set for the Lambda function with the appropriate values.
