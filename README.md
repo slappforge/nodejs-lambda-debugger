@@ -66,7 +66,7 @@ npm i slappforge-lambda-debug-proxy --save
 
 Add the Lambda Layer with the following ARN to your Lambda function.
 ```
-arn:aws:lambda:us-east-1:892904900711:layer:slappforge-lambda-debug-layer:2
+arn:aws:lambda:us-east-1:892904900711:layer:slappforge-debug-nodejs-1-0-0-build-01:1
 ```
 
 After adding the proxy component as a dependency using one of the options, require the package at the very end of the 
