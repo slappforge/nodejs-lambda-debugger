@@ -83,14 +83,14 @@ module.exports = {
                 let method = msgObj.method;
 
                 if (method !== METHOD_NAMES.RUN) {
-                    if ((method === METHOD_NAMES.LOG_ENABLE)) {
-                        let newMsg = {
-                            ...msgObj,
-                            method: METHOD_NAMES.SET_BRK_PT,
-                            params: {"lineNumber": 1, "urlRegex": ".*\\.js"}
-                        };
-                        message = JSON.stringify(newMsg);
-                    }
+                    // if ((method === METHOD_NAMES.LOG_ENABLE)) {
+                    //     let newMsg = {
+                    //         ...msgObj,
+                    //         method: METHOD_NAMES.SET_BRK_PT,
+                    //         params: {"lineNumber": 1, "urlRegex": ".*\\.js"}
+                    //     };
+                    //     message = JSON.stringify(newMsg);
+                    // }
 
                     logIfVerbose(verbose, 'C-2-B', '>>>', message);
                     if (bSocket.readyState === WebSocket.OPEN) {
