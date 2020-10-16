@@ -1,6 +1,6 @@
 {
   "name": "slappforge-debug-client",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "The local client component of SLAppForge AWS Lambda debugger toolkit. This should be installed as a global Node module in the develope machine.",
   "main": "index.js",
   "bin": {
