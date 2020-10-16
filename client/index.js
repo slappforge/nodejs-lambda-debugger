@@ -11,7 +11,7 @@ clear();
 
 console.log(
     chalk.cyan(
-        figlet.textSync('SLAppForge Debug Client', {font: 'doom', horizontalLayout: 'fitted'})
+        figlet.textSync('SLAppForge Debug Client', {font: 'Doom', horizontalLayout: 'fitted'})
     )
 );
 
